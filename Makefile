@@ -30,6 +30,9 @@ buildx-create:
 	docker buildx create --platform linux/arm64,linux/arm/v8 --name mybuilder node-arm64
 	docker buildx create --append --platform linux/amd64 --name mybuilder node-amd64
 
+tag:
+	git tag -a ${VERSION}
+	git push origin ${VERSION}
 
 # DEPRECATED
 manif-push: manif-build push-arm64 push-amd64 manifest
