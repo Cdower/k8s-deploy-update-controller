@@ -1,11 +1,7 @@
 #!make
 .PHONY: build all
 .DEFAULT_GOAL := all
-IMAGENAME=deploy-update-controller
-REPO=cdower
-VERSION=v0.0.1
-IMAGEREPO=${REPO}/${IMAGENAME}
-IMAGEFULLNAME=${IMAGEREPO}:${VERSION}
+include ENVFILE
 include secret_envfile
 
 all: build
@@ -36,7 +32,7 @@ buildx-create:
 
 
 # DEPRECATED
-manif-push: push-arm64 push-amd64 manifest
+manif-push: manif-build push-arm64 push-amd64 manifest
 
 manif-build: build-arm64 build-amd64
 
