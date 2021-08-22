@@ -21,7 +21,6 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
-
 jobs:
   build:
 
@@ -56,8 +55,11 @@ jobs:
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        env:
+          VERSION: v${{ steps.dotenv.outputs.major}}.${{ steps.dotenv.outputs.minor}}.${{ steps.dotenv.outputs.patch}}
+          IMAGEREPO: ${{ steps.dotenv.outputs.repo}}/${{ steps.dotenv.outputs.imagename}}
         with:
-          images: ${{ env.IMAGEREPO }} # ${{ env.GITHUB_REPOSITORY }}
+          images: ${{ env.IMAGEREPO }}
           tags: |
             type=schedule,pattern=nightly
             type=ref,event=branch
