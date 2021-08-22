@@ -22,3 +22,6 @@ TODO: Checkout buildx bake https://docs.docker.com/buildx/working-with-buildx/
 ## Structure
 Porject layout based on [golang-standards/project-layout](https://github.com/golang-standards/project-layout)
 
+## Secrets
+secret_envfile sets default empty strings as defaults for the registry credentials, currently dockerhub only, and then imports secret.env to override them.
+If blank no secret will be created.

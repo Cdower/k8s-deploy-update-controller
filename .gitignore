@@ -19,3 +19,6 @@
 # ignore updates to secret_envfile as it should contain credentials
 secret_envfile
 secret.env
+
+# don't check in terraform state
+terraform.tfstate*
