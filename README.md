@@ -25,3 +25,7 @@ Porject layout based on [golang-standards/project-layout](https://github.com/gol
 ## Secrets
 secret_envfile sets default empty strings as defaults for the registry credentials, currently dockerhub only, and then imports secret.env to override them.
 If blank no secret will be created.
+
+### Removing accidently committed secrets
+Use bgf to remove sensative files from git repo history 
+https://rtyley.github.io/bfg-repo-cleaner/
