@@ -29,3 +29,5 @@ If blank no secret will be created.
 ### Removing accidently committed secrets
 Use bgf to remove sensative files from git repo history 
 https://rtyley.github.io/bfg-repo-cleaner/
+
+If pull fails after removing secrets `git pull origin main --allow-unrelated-histories`
