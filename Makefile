@@ -1,7 +1,7 @@
 #!make
 .PHONY: build all
 .DEFAULT_GOAL := all
-include ENVFILE
+include .env
 include secret_envfile
 
 all: build
