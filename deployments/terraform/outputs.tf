@@ -1,3 +1,3 @@
 output "name" {
-  secret_metadata = kubernetes_secret.regcred.metadata
+  value = kubernetes_secret.regcred.metadata
 }
