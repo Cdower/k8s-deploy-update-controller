@@ -15,10 +15,10 @@ buildx-build:
 # DEPLOY #cdower/deploy-update-controller:v0.0.1
 
 plan:
-	terraform -chdir=./deployments/terraform plan -var="image=${IMAGEFULLNAME}" -var="registry_user=${REGISTRY_USER}" -var="registry_pass=${REGISTRY_PASS}"
+	terraform -chdir=./deployments/terraform plan -var='image=${IMAGEFULLNAME}' -var='registry_user=${REGISTRY_USER}' -var='registry_pass=${REGISTRY_PASS}'
 
 apply:
-	terraform -chdir=./deployments/terraform apply -var="image=${IMAGEFULLNAME}" -var="registry_user=${REGISTRY_USER}" -var="registry_pass=${REGISTRY_PASS}"
+	terraform -chdir=./deployments/terraform apply -var='image=${IMAGEFULLNAME}' -var='registry_user=${REGISTRY_USER}' -var='registry_pass=${REGISTRY_PASS}'
 
 # SETUP
 

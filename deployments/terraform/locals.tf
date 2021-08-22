@@ -8,4 +8,5 @@ locals {
         deploy    = "home-assistant-complexity"
     },
   }
+  regcred_enable = (var.registry_user != "" && var.registry_pass != "") ? 1 : 0
 }
