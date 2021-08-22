@@ -60,6 +60,10 @@ jobs:
           IMAGEREPO: ${{ steps.dotenv.outputs.repo}}/${{ steps.dotenv.outputs.imagename}}
         with:
           images: ${{ env.IMAGEREPO }}
+          labels: |
+            maintainer=cdoewr
+            org.opencontainers.image.title=Kubernetes Deployment Updater
+            org.opencontainers.image.description=A jerry rigged quote unquote controller to watch deployments for new releases and update them.
           tags: |
             type=schedule,pattern=nightly
             type=ref,event=branch
