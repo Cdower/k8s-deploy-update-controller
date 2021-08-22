@@ -25,9 +25,17 @@ Porject layout based on [golang-standards/project-layout](https://github.com/gol
 ## Secrets
 secret_envfile sets default empty strings as defaults for the registry credentials, currently dockerhub only, and then imports secret.env to override them.
 If blank no secret will be created.
+https://docs.github.com/en/actions/reference/encrypted-secrets
 
 ### Removing accidently committed secrets
 Use bgf to remove sensative files from git repo history 
 https://rtyley.github.io/bfg-repo-cleaner/
 
 If pull fails after removing secrets `git pull origin main --allow-unrelated-histories`
+
+## Github Actions
+https://docs.docker.com/ci-cd/github-actions/
+https://docs.docker.com/ci-cd/best-practices/
+
+## kube client-go examples
+https://github.com/kubernetes/client-go/tree/master/examples
