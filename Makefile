@@ -30,6 +30,9 @@ buildx-create:
 	docker buildx create --platform linux/arm64,linux/arm/v8 --name mybuilder node-arm64
 	docker buildx create --append --platform linux/amd64 --name mybuilder node-amd64
 
+release:
+	 gh release create ${VERSION}
+
 tag: tag-create tag-push
 
 tag-create:
