@@ -70,7 +70,7 @@ resource "kubernetes_cron_job" "update" {
           spec {
             restart_policy = "OnFailure"
             image_pull_secrets {
-              name = kubernetes_secret.regcred.0.metadata.0.name
+              name = kubernetes_secret.regcred[local.controller_ns].metadata.0.name
             }
             container {
               name    = "deploy-update-controller-${each.key}"
@@ -113,10 +113,10 @@ resource "kubernetes_cron_job" "update" {
 }
 
 resource "kubernetes_secret" "regcred" {
-  count = local.regcred_enable
+  for_each = toset(local.regcred_secret_namespaces)
   metadata {
     name = "regcred"
-    namespace = local.controller_ns
+    namespace = each.key
   }
 
   data = {

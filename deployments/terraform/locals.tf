@@ -21,4 +21,5 @@ locals {
     }
   }
   regcred_enable = (var.registry_user != "" && var.registry_pass != "") ? 1 : 0
+  regcred_secret_namespaces = local.regcred_enable == 1 ? flatten([local.controller_ns, var.regcred_add_ns]) : []
 }

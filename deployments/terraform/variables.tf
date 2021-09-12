@@ -26,3 +26,8 @@ variable "registry_server" {
   type = string
   default = "https://index.docker.io/v1/"
 }
+
+variable "regcred_add_ns" {
+  type = list(string)
+  default = []
+}

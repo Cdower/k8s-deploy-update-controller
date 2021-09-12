@@ -1,5 +1,5 @@
 output "regcred_name" {
-  value = kubernetes_secret.regcred.0.metadata.0.name
+  value = kubernetes_secret.regcred[local.controller_ns].metadata.0.name
 }
 
 output "regcred_enabled" {
