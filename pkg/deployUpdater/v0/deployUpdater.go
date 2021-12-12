@@ -34,7 +34,7 @@ func (d *DeployUpdater) Run() {
 		if err != nil {
 			panic(err)
 		}
-		log.Println("Deploy successfully applied with version %s.", latest)
+		log.Printf("Deploy successfully applied with version %s.\n", latest)
 	}
 }
 
