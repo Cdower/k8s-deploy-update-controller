@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"path/filepath"
 	"strings"
 
@@ -36,8 +37,9 @@ func NewKubeClient(s *utils.Specification) *KubeClient {
 	k := KubeClient{
 		settings: s,
 	}
+	log.Printf("InCluster: %t\n", k.settings.InCluster)
 	if k.settings.InCluster { // Load the in-cluster config
-		fmt.Println("loading in cluster config")
+		log.Println("loading in cluster config")
 		config, err := rest.InClusterConfig()
 		if err != nil {
 			panic(err.Error())
@@ -48,7 +50,7 @@ func NewKubeClient(s *utils.Specification) *KubeClient {
 			panic(err.Error())
 		}
 	} else { // Load kube config file
-		fmt.Println("loading out of cluster config")
+		log.Println("loading out of cluster config")
 		var kubeconfig *string
 		if home := homedir.HomeDir(); home != "" {
 			kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
@@ -81,7 +83,7 @@ func (k *KubeClient) GetPods() {
 	if k.settings.Namespace == "" {
 		k.settings.Namespace = "all"
 	}
-	fmt.Printf("There are %d pods in the %s namespace\n", len(pods.Items), k.settings.Namespace)
+	log.Printf("There are %d pods in the %s namespace\n", len(pods.Items), k.settings.Namespace)
 }
 
 func (k *KubeClient) GetDeployments() {
@@ -95,9 +97,9 @@ func (k *KubeClient) GetDeployments() {
 	if k.settings.Namespace == "" {
 		k.settings.Namespace = "all"
 	}
-	fmt.Printf("There are %d Deployments in the %s namespace\n", len(deployList.Items), k.settings.Namespace)
+	log.Printf("There are %d Deployments in the %s namespace\n", len(deployList.Items), k.settings.Namespace)
 	for _, d := range deployList.Items {
-		fmt.Printf(" * %s (%d replicas)\n", d.Name, *d.Spec.Replicas)
+		log.Printf(" * %s (%d replicas)\n", d.Name, *d.Spec.Replicas)
 	}
 }
 
@@ -133,7 +135,8 @@ func (k *KubeClient) UpdateDeploymentVersion(newVer string) error {
 	splitImage[1] = newVer
 	deploy.Spec.Template.Spec.Containers[0].Image = strings.Join(splitImage, ":")
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		_, updateErr := k.deploymentsClient.Update(context.TODO(), deploy, metav1.UpdateOptions{DryRun: []string{"All"}})
+		updatedDeploy, updateErr := k.deploymentsClient.Update(context.TODO(), deploy, metav1.UpdateOptions{})
+		log.Printf("new tag: %s\n", strings.Split(updatedDeploy.Spec.Template.Spec.Containers[0].Image, ":"))
 		return updateErr
 	})
 	if retryErr != nil {

@@ -9,13 +9,14 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: {{ serviceAccountName }}
           containers:
           - name: deploy-update-controller-{{ deployment }}
             image: {{ image }}
-            imagePullPolicy: 
+            imagePullPolicy: always
             serviceAccount: {{ serviceAccountName }}
             command:
-            - /deploy-update-controller
+            - ./deploy-update-controller
             env:
             - name: IN_CLUSTER
               value: "true"

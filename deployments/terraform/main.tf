@@ -64,7 +64,7 @@ resource "kubernetes_cron_job" "update" {
       metadata {}
       spec {
         backoff_limit              = 2
-        ttl_seconds_after_finished = 30
+        ttl_seconds_after_finished = 900
         template {
           metadata {}
           spec {
@@ -72,10 +72,12 @@ resource "kubernetes_cron_job" "update" {
             image_pull_secrets {
               name = kubernetes_secret.regcred[local.controller_ns].metadata.0.name
             }
+            service_account_name = "deploy-update-controller-${each.key}"
             container {
               name    = "deploy-update-controller-${each.key}"
               image   = var.image
-              command = ["/deploy-update-controller"]
+              image_pull_policy = "Always"
+              command = ["./deploy-update-controller"]
               env {
                 name  = "IN_CLUSTER"
                 value = "true"

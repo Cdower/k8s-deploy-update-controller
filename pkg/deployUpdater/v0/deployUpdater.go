@@ -1,7 +1,7 @@
 package deployupdater
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -17,19 +17,24 @@ type DeployUpdater struct {
 
 func NewDeployUpdater() *DeployUpdater {
 	d := &DeployUpdater{}
-	// fmt.Println("new deploy updater")
+	// log.Println("new deploy updater")
 	d.settings = utils.NewSettings()
 	d.kube = kubeV0.NewKubeClient(d.settings)
 	return d
 }
 
 func (d *DeployUpdater) Run() {
-	// fmt.Println("Run")
+	// log.Println("Run")
 	d.kube.GetDeployments()
 	latest := d.getLatestRelease()
-	if latest != d.kube.GetDeploymentVersion() {
-		fmt.Println("Need to update deployment with latest release.")
-		d.kube.UpdateDeploymentVersion(latest)
+	deployed_version := d.kube.GetDeploymentVersion()
+	if latest != deployed_version {
+		log.Printf("Need to update deployment with latest release. From %s to %s", deployed_version, latest)
+		err := d.kube.UpdateDeploymentVersion(latest)
+		if err != nil {
+			panic(err)
+		}
+		log.Println("Deploy successfully applied with version %s.", latest)
 	}
 }
 
@@ -40,14 +45,14 @@ func (d *DeployUpdater) getLatestRelease() string {
 			return http.ErrUseLastResponse
 		},
 	}
-	// fmt.Printf("Checking channel url: %s\n", d.settings.Channel)
+	// log.Printf("Checking channel url: %s\n", d.settings.Channel)
 	resp, err := client.Get(d.settings.Channel)
 	if err != nil {
 		panic(err.Error())
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 302 {
-		// fmt.Println(resp.Header.Get("location"))
+		// log.Println(resp.Header.Get("location"))
 		loc, err := url.Parse(resp.Header.Get("location"))
 		if err != nil {
 			panic(err.Error())

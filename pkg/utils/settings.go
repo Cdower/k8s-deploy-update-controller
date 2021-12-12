@@ -11,16 +11,18 @@ type Specification struct {
 	Namespace           string `required:"true" default:"default"`
 	Deployment          string `required:"true" default:"home-assistant"`
 	Container           string `required:"true" default:"main"`
-	ServiceAccountName  string `default:"deploy-update-controller"`
-	ControllerNamespace string `default:"deploy-update-controller"`
-	InCluster           bool   `default:"false"`
+	ServiceAccountName  string `default:"deploy-update-controller" split_words:"true"`
+	ControllerNamespace string `default:"deploy-update-controller" split_words:"true"`
+	InCluster           bool   `default:"false" split_words:"true"`
 }
 
 func NewSettings() *Specification {
 	s := Specification{}
-	err := envconfig.Process("deployUpdater", &s)
+	// err := envconfig.Process("deployUpdater", &s)
+	err := envconfig.Process("", &s)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	log.Println(s.InCluster)
 	return &s
 }
