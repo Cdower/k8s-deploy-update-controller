@@ -9,7 +9,7 @@ locals {
     },
     "ombi-complexity" = {
       namespace = "home",
-      channel   = "https://github.com/Ombi-app/Ombi/releases/latest",
+      channel   = "https://github.com/linuxserver/docker-ombi/releases/tag/v4.3.3-ls111",
       container = "ombi",
       deploy    = "ombi-complexity",
     },
