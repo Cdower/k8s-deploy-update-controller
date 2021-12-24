@@ -64,7 +64,7 @@ resource "kubernetes_cron_job" "update" {
       metadata {}
       spec {
         backoff_limit              = 2
-        ttl_seconds_after_finished = 900
+        ttl_seconds_after_finished = 86400
         template {
           metadata {}
           spec {
