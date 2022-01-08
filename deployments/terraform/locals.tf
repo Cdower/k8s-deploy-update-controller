@@ -7,12 +7,12 @@ locals {
         container = "home-assistant",
         deploy    = "home-assistant-complexity",
     },
-    "ombi-complexity" = {
-      namespace = "home",
-      channel   = "https://github.com/linuxserver/docker-ombi/releases/latest",
-      container = "ombi",
-      deploy    = "ombi-complexity",
-    },
+    # "ombi-complexity" = {
+    #   namespace = "home",
+    #   channel   = "https://github.com/linuxserver/docker-ombi/releases/latest",
+    #   container = "ombi",
+    #   deploy    = "ombi-complexity",
+    # },
     "sonar-complexity" = {
       namespace = "home",
       channel   = "https://github.com/linuxserver/docker-sonarr/releases/latest",
