@@ -25,7 +25,7 @@ func NewDeployUpdater() *DeployUpdater {
 
 func (d *DeployUpdater) Run() {
 	// log.Println("Run")
-	d.kube.GetDeployments()
+	d.kube.PrintDeployments()
 	latest := d.getLatestRelease()
 	deployed_version := d.kube.GetDeploymentVersion()
 	if latest != deployed_version {

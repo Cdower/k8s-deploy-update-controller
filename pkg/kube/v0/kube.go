@@ -31,6 +31,7 @@ type KubeClient struct {
 	client            *kubernetes.Clientset
 	deploymentsClient appsV1.DeploymentInterface
 	podsClient        apiV1.PodInterface
+	cntrIdx           int
 }
 
 func NewKubeClient(s *utils.Specification) *KubeClient {
@@ -69,7 +70,31 @@ func NewKubeClient(s *utils.Specification) *KubeClient {
 			panic(err.Error())
 		}
 	}
+	// Set Namespace in client
+	k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
+	// Get index of container in deployment
+	k.getContainerIndexFromName()
 	return &k
+}
+
+func (k *KubeClient) getContainerIndexFromName() {
+	deploy := k.getDeployment()
+	for i, cntr := range deploy.Spec.Template.Spec.Containers {
+		if cntr.Name == k.settings.Container {
+			k.cntrIdx = i
+		}
+	}
+}
+
+func (k *KubeClient) getDeployment() *appsv1.Deployment {
+	// if k.deploymentsClient == nil {
+	// 	k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
+	// }
+	result, getErr := k.deploymentsClient.Get(context.TODO(), k.settings.Deployment, metav1.GetOptions{})
+	if getErr != nil {
+		panic(fmt.Errorf("failed to get latest version of deployment: %v", getErr))
+	}
+	return result
 }
 
 func (k *KubeClient) GetPods() {
@@ -86,10 +111,10 @@ func (k *KubeClient) GetPods() {
 	log.Printf("There are %d pods in the %s namespace\n", len(pods.Items), k.settings.Namespace)
 }
 
-func (k *KubeClient) GetDeployments() {
-	if k.deploymentsClient == nil {
-		k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
-	}
+func (k *KubeClient) PrintDeployments() {
+	// if k.deploymentsClient == nil {
+	// 	k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
+	// }
 	deployList, err := k.deploymentsClient.List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
@@ -105,38 +130,27 @@ func (k *KubeClient) GetDeployments() {
 
 // result, getErr := deploymentsClient.Get(context.TODO(), "demo-deployment", metav1.GetOptions{})
 func (k *KubeClient) GetDeploymentVersion() string {
-	if k.deploymentsClient == nil {
-		k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
-	}
+	// if k.deploymentsClient == nil {
+	// 	k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
+	// }
 	result, getErr := k.deploymentsClient.Get(context.TODO(), k.settings.Deployment, metav1.GetOptions{})
 	if getErr != nil {
 		panic(fmt.Errorf("failed to get latest version of deployment: %v", getErr))
 	}
-	return strings.Split(result.Spec.Template.Spec.Containers[0].Image, ":")[1]
-}
-
-func (k *KubeClient) getDeployment() *appsv1.Deployment {
-	if k.deploymentsClient == nil {
-		k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
-	}
-	result, getErr := k.deploymentsClient.Get(context.TODO(), k.settings.Deployment, metav1.GetOptions{})
-	if getErr != nil {
-		panic(fmt.Errorf("failed to get latest version of deployment: %v", getErr))
-	}
-	return result
+	return strings.Split(result.Spec.Template.Spec.Containers[k.cntrIdx].Image, ":")[1]
 }
 
 func (k *KubeClient) UpdateDeploymentVersion(newVer string) error {
-	if k.deploymentsClient == nil {
-		k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
-	}
+	// if k.deploymentsClient == nil {
+	// 	k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
+	// }
 	deploy := k.getDeployment()
-	splitImage := strings.Split(deploy.Spec.Template.Spec.Containers[0].Image, ":")
+	splitImage := strings.Split(deploy.Spec.Template.Spec.Containers[k.cntrIdx].Image, ":")
 	splitImage[1] = newVer
-	deploy.Spec.Template.Spec.Containers[0].Image = strings.Join(splitImage, ":")
+	deploy.Spec.Template.Spec.Containers[k.cntrIdx].Image = strings.Join(splitImage, ":")
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		updatedDeploy, updateErr := k.deploymentsClient.Update(context.TODO(), deploy, metav1.UpdateOptions{})
-		log.Printf("new tag: %s\n", strings.Split(updatedDeploy.Spec.Template.Spec.Containers[0].Image, ":"))
+		log.Printf("new tag: %s\n", strings.Split(updatedDeploy.Spec.Template.Spec.Containers[k.cntrIdx].Image, ":"))
 		return updateErr
 	})
 	if retryErr != nil {
