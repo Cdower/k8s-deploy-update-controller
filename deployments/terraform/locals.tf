@@ -9,7 +9,7 @@ locals {
     },
     "ombi-complexity" = {
       namespace = "home",
-      channel   = "https://github.com/linuxserver/docker-ombi/releases/tag/v4.3.3-ls111",
+      channel   = "https://github.com/linuxserver/docker-ombi/releases/latest",
       container = "ombi",
       deploy    = "ombi-complexity",
     },
@@ -18,6 +18,12 @@ locals {
       channel   = "https://github.com/linuxserver/docker-sonarr/releases/latest",
       container = "sonar",
       deploy    = "sonar-complexity",
+    }
+    "transmission-complexity" = {
+      namespace = "home",
+      channel   = "https://github.com/bubuntux/nordvpn/releases/latest",
+      container = "vpn",
+      deploy    = "transmission-complexity",
     }
   }
   regcred_enable = (var.registry_user != "" && var.registry_pass != "") ? 1 : 0
