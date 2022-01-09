@@ -31,7 +31,6 @@ type KubeClient struct {
 	client            *kubernetes.Clientset
 	deploymentsClient appsV1.DeploymentInterface
 	podsClient        apiV1.PodInterface
-	cntrIdx           int
 }
 
 func NewKubeClient(s *utils.Specification) *KubeClient {
@@ -72,18 +71,18 @@ func NewKubeClient(s *utils.Specification) *KubeClient {
 	}
 	// Set Namespace in client
 	k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
-	// Get index of container in deployment
-	k.getContainerIndexFromName()
 	return &k
 }
 
-func (k *KubeClient) getContainerIndexFromName() {
-	deploy := k.getDeployment()
+func (k *KubeClient) getContainerIndexFromName(deploy *appsv1.Deployment) int {
 	for i, cntr := range deploy.Spec.Template.Spec.Containers {
+		log.Printf("Index: %d, Name: %s", i, cntr.Name)
 		if cntr.Name == k.settings.Container {
-			k.cntrIdx = i
+			log.Printf("Using: Index: %d, Name: %s", i, cntr.Name)
+			return i
 		}
 	}
+	return 0
 }
 
 func (k *KubeClient) getDeployment() *appsv1.Deployment {
@@ -137,7 +136,8 @@ func (k *KubeClient) GetDeploymentVersion() string {
 	if getErr != nil {
 		panic(fmt.Errorf("failed to get latest version of deployment: %v", getErr))
 	}
-	return strings.Split(result.Spec.Template.Spec.Containers[k.cntrIdx].Image, ":")[1]
+	idx := k.getContainerIndexFromName(result)
+	return strings.Split(result.Spec.Template.Spec.Containers[idx].Image, ":")[1]
 }
 
 func (k *KubeClient) UpdateDeploymentVersion(newVer string) error {
@@ -145,12 +145,13 @@ func (k *KubeClient) UpdateDeploymentVersion(newVer string) error {
 	// 	k.deploymentsClient = k.client.AppsV1().Deployments(k.settings.Namespace)
 	// }
 	deploy := k.getDeployment()
-	splitImage := strings.Split(deploy.Spec.Template.Spec.Containers[k.cntrIdx].Image, ":")
+	idx := k.getContainerIndexFromName(deploy)
+	splitImage := strings.Split(deploy.Spec.Template.Spec.Containers[idx].Image, ":")
 	splitImage[1] = newVer
-	deploy.Spec.Template.Spec.Containers[k.cntrIdx].Image = strings.Join(splitImage, ":")
+	deploy.Spec.Template.Spec.Containers[idx].Image = strings.Join(splitImage, ":")
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		updatedDeploy, updateErr := k.deploymentsClient.Update(context.TODO(), deploy, metav1.UpdateOptions{})
-		log.Printf("new tag: %s\n", strings.Split(updatedDeploy.Spec.Template.Spec.Containers[k.cntrIdx].Image, ":"))
+		log.Printf("new tag: %s\n", strings.Split(updatedDeploy.Spec.Template.Spec.Containers[idx].Image, ":"))
 		return updateErr
 	})
 	if retryErr != nil {

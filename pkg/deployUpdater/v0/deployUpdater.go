@@ -35,6 +35,8 @@ func (d *DeployUpdater) Run() {
 			panic(err)
 		}
 		log.Printf("Deploy successfully applied with version %s.\n", latest)
+	} else {
+		log.Printf("container: %s image up to date.", d.settings.Container)
 	}
 }
 

@@ -57,7 +57,7 @@ resource "kubernetes_cron_job" "update" {
   spec {
     concurrency_policy            = "Replace"
     failed_jobs_history_limit     = 5
-    schedule                      = "15 4 * * *"
+    schedule                      = each.value["schedule"]
     starting_deadline_seconds     = 30
     successful_jobs_history_limit = 10
     job_template {
@@ -89,11 +89,11 @@ resource "kubernetes_cron_job" "update" {
               env {
                 name  = "DEPLOYMENT"
                 value = each.value["deploy"]
-              } 
+              }
               env {
                 name  = "NAMESPACE"
                 value = each.value["namespace"]
-              } 
+              }
               env {
                 name  = "CHANNEL"
                 value = each.value["channel"]
