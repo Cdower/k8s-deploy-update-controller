@@ -7,9 +7,9 @@ updates:
       interval: "daily"
   - package-ecosystem: "terraform"
     directory: "/deployments/terraform"
-      schedule:
-        interval: "daily"
+    schedule:
+      interval: "daily"
   - package-ecosystem: "docker"
     directory: "/build"
-      schedule:
-        interval: "daily"
+    schedule:
+      interval: "daily"
