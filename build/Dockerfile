@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.18.3-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.18.4-alpine AS builder
 # https://github.com/docker/buildx#building-multi-platform-images
 # https://github.com/tonistiigi/xx
 COPY --from=tonistiigi/xx / /
