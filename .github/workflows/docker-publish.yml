@@ -35,7 +35,7 @@ jobs:
 
       - name: Load envinronment variables from file
         id: dotenv
-        uses: falti/dotenv-action@v0.2.8
+        uses: falti/dotenv-action@v1.0.0
         with:
           mask-variables: false
           log-variables: true
