@@ -35,7 +35,7 @@ jobs:
 
       - name: Load envinronment variables from file
         id: dotenv
-        uses: falti/dotenv-action@v0.2.8
+        uses: falti/dotenv-action@v1.0.2
         with:
           mask-variables: false
           log-variables: true
@@ -44,7 +44,7 @@ jobs:
       # https://github.com/docker/login-action
       - name: Log into registry Dockerhub #${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
           # registry: ${{ env.REGISTRY }}
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -83,7 +83,7 @@ jobs:
 
       # Optimize with layer Caching
       - name: Cache Docker layers
-        uses: actions/cache@v3.0.4
+        uses: actions/cache@v3.2.3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
